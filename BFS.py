@@ -19,5 +19,5 @@ if __name__ == '__main__':
 			  'E': [] }
 for  x in bfs( 'A', 'F', graph ):
     print(x)
-
+print("Me gusta cuando soy estupido")
 	# ['A', 'B', 'D', 'F']
