@@ -47,15 +47,33 @@ module ALU(
         case(active_display)
             3'b000: begin
                 AN = 8'b11111110;
-                digito = result%100%10;
+                begin
+                  if (Op==3 & Num2 == 0)
+                    digito = 8;
+                  else
+                    digito = result%100%10;
+                end
+                
                    end
             3'b001: begin
                 AN = 8'b11111101;
-                digito = result%100/10;    
+                begin
+                  if (Op==3 & Num2==0)
+                    digito = 8;
+                  else
+                    digito = result%100/10;
+                end
+                    
                    end
             3'b010: begin                                
                 AN = 8'b11111011;
-                digito = result/100;
+                begin
+                  if (Op==1 & Num2 > Num1)
+                    digito = 10;
+                  else
+                    digito = result/100;
+                end
+                
                    end
             3'b011: begin
                 AN = 8'b11110111;
@@ -98,3 +116,4 @@ module ALU(
         endcase 
     end
 endmodule
+
