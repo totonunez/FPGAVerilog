@@ -26,6 +26,10 @@ module semaforossdd(
     input RST,
     output reg [7:0] AN,
     output reg [6:0] display
+    output G16,
+    output G17,
+    output R16,
+    output R17,
     );
     reg [3:0] digito;
     reg [18:0] refresh;
@@ -33,7 +37,7 @@ module semaforossdd(
     
     reg [26:0] CONTADOR_SEG; // Contador para generar segundos segun el CLK de la placa. 134.217.728 (ms) para generar CLK
     wire SEGUNDO; // Indicador que paso un segundo.
-    reg [5:0] DISPLAY; //Monstrar el número que hay
+    reg [5:0] DISPLAY; //Monstrar el nÃºmero que hay
     
     
     always @(posedge CLK100MHZ or posedge RST)
@@ -86,6 +90,38 @@ always @( posedge CLK100MHZ or posedge RST)
                         end                         
              endcase
          end
+    
+    always @(*)
+	begin
+		begin
+		if (DISPLAY >= 0 & DISPLAY < 20)
+			R16=1;
+            R17=0;
+            G16=0;
+            G17=0;
+		else begin
+			if (DISPLAY >= 20 & DISPLAY < 30)
+				G16=G16^1;
+			else begin
+				if (DISPLAY >= 30 & DISPLAY < 35)
+					R16 = R16^1;
+				else begin
+					if (DISPLAY >= 35 & DISPLAY < 40)
+						G16=G16^1;
+						R17=R17^1;
+					else begin
+						if (DISPLAY >= 40 & DISPLAY < 50)
+							G17= G17^1;
+						else begin
+							if (DISPLAY >= 50 & DISPLAY < 55)
+								R17 = R17^1;								end
+						end
+					end
+			end
+		end
+	end
+
+end
     
     always @(*)
     begin
