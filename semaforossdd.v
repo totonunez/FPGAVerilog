@@ -23,28 +23,31 @@
 module semaforossdd(
 
     input CLK100MHZ,
-    input RST,
     output reg [7:0] AN,
-    output reg [6:0] display
-    output G16,
-    output G17,
-    output R16,
-    output R17,
+    output reg [6:0] display,
+    output reg G16,
+    output reg G17,
+    output reg R16,
+    output reg R17
     );
     reg [3:0] digito;
     reg [18:0] refresh;
     wire active_display;
+    wire RED1=R16;
+    wire RED2=R17;
+    wire GREEN1=G16;
+    wire GREEN2=G17;
+
+    
     
     reg [26:0] CONTADOR_SEG; // Contador para generar segundos segun el CLK de la placa. 134.217.728 (ms) para generar CLK
     wire SEGUNDO; // Indicador que paso un segundo.
     reg [5:0] DISPLAY; //Monstrar el número que hay
     
     
-    always @(posedge CLK100MHZ or posedge RST)
+    always @(posedge CLK100MHZ)
     begin
-        if(RST==1)
-            CONTADOR_SEG <= 0;
-        else begin
+        begin
             if(CONTADOR_SEG>=99999999) 
                  CONTADOR_SEG <= 0;
             else
@@ -62,19 +65,57 @@ always @(posedge CLK100MHZ)
         end
         assign active_display = refresh[18];
         
+
+    always @(posedge CLK100MHZ)
     
-always @( posedge CLK100MHZ or posedge RST) 
+
     
-    begin 
-        if (RST==1) 
-            DISPLAY <= 0;
-        else if (DISPLAY==1) 
-            begin if (DISPLAY>=55) 
+		
+        if (DISPLAY >= 0 & DISPLAY < 20)
+        begin
+        R16<=1;
+        R17<=0;
+        G16<=0;
+        G17<=0;
+        end
+        else if (DISPLAY >= 20 & DISPLAY < 30)
+        begin
+        G16<=1;
+        R16<=0;
+        end
+        else if (DISPLAY >= 30 & DISPLAY < 35)
+        begin
+        R16 = 1;
+        end
+        else if (DISPLAY >= 35 & DISPLAY < 40)
+        begin
+        R16<=0;
+        G16=0;
+        R17=1;
+        end            
+        else if (DISPLAY >= 40 & DISPLAY < 50)
+        begin
+        G17=1;
+        R17=0;
+        end
+        else if (DISPLAY >= 50 & DISPLAY < 55)
+        begin
+        R17=1;
+        end                       
+
+
+
+
+always @( posedge CLK100MHZ) 
+    
+    begin
+        if (SEGUNDO==1) 
+            begin if (DISPLAY>=54) 
                 DISPLAY <= 0; 
             else
                 DISPLAY <= DISPLAY + 1; 
-            end 
-     end
+            end
+    end
      
      always @(*)
          begin
@@ -83,46 +124,13 @@ always @( posedge CLK100MHZ or posedge RST)
                      AN = 8'b11111110;
                      digito = DISPLAY%10;
                      end
-               
                  1'b1: begin
                      AN = 8'b11111101;
                      digito = DISPLAY/10;    
                         end                         
              endcase
          end
-    
-    always @(*)
-	begin
-		begin
-		if (DISPLAY >= 0 & DISPLAY < 20)
-			R16=1;
-            R17=0;
-            G16=0;
-            G17=0;
-		else begin
-			if (DISPLAY >= 20 & DISPLAY < 30)
-				G16=G16^1;
-			else begin
-				if (DISPLAY >= 30 & DISPLAY < 35)
-					R16 = R16^1;
-				else begin
-					if (DISPLAY >= 35 & DISPLAY < 40)
-						G16=G16^1;
-						R17=R17^1;
-					else begin
-						if (DISPLAY >= 40 & DISPLAY < 50)
-							G17= G17^1;
-						else begin
-							if (DISPLAY >= 50 & DISPLAY < 55)
-								R17 = R17^1;								end
-						end
-					end
-			end
-		end
-	end
 
-end
-    
     always @(*)
     begin
         case(digito)
