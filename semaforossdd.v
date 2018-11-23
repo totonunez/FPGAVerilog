@@ -146,6 +146,18 @@ always @( posedge CLK100MHZ)
         4'b1001: display = 7'b0000100; // "9"
         4'b1010: display = 7'b1111110; // "-"
         default: display = 7'b0000001; // "0"
-        endcase 
+        endcase
+    end
+    always @(posedge CLK100MHZ) 
+    begin
+        // detect rising edge
+        if (button_old != BTNC && BTNC == 1'b1)
+              button_raise <= 1'b1;
+               button_old <= BTNC;
+        // increment number
+        if (button_raise == 1'b1)
+        begin
+                R17<=1;
+        end
     end
 endmodule
